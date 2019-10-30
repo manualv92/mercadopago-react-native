@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Image, ImageStyle, Platform, TextStyle, View, ViewStyle } from "react-native"
+import { Image, ImageStyle, Platform, TextStyle, View, ViewStyle, NativeModules } from "react-native"
 import { NavigationScreenProps } from "react-navigation"
 import { Screen } from "../../components/screen"
 import { Text } from "../../components/text"
@@ -11,6 +11,14 @@ import { logoIgnite, heart } from "./"
 import { BulletItem } from "../../components/bullet-item"
 import { Api } from "../../services/api"
 import { save } from "../../utils/storage"
+
+//MercadoPago
+const toastExample = NativeModules.ToastExample;
+const MPExample = NativeModules.MercadoPagoTest;
+
+console.log(MPExample)
+console.log("asdasdasdsd")
+console.log(NativeModules)
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -143,7 +151,7 @@ export const DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
             style={DEMO}
             textStyle={DEMO_TEXT}
             tx="demoScreen.reactotron"
-            onPress={demoReactotron}
+            onPress={MPExample.getCardToken()}
           />
           <Text style={HINT} tx={`demoScreen.${Platform.OS}ReactotronHint`} />
         </View>
