@@ -9,16 +9,13 @@ import { Header } from "../../components/header"
 import { color, spacing } from "../../theme"
 import { logoIgnite, heart } from "./"
 import { BulletItem } from "../../components/bullet-item"
-import { Api } from "../../services/api"
-import { save } from "../../utils/storage"
+// import { Api } from "../../services/api"
+// import { save } from "../../utils/storage"
 
 //MercadoPago
-const toastExample = NativeModules.ToastExample;
 const MPExample = NativeModules.MercadoPagoTest;
 
-console.log(MPExample)
-console.log("asdasdasdsd")
-console.log(NativeModules)
+console.log("MPExample ", MPExample)
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -93,43 +90,58 @@ export interface DemoScreenProps extends NavigationScreenProps<{}> {}
 export const DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
   const goBack = React.useMemo(() => () => props.navigation.goBack(null), [props.navigation])
 
-  const demoReactotron = React.useMemo(
-    () => async () => {
-      console.tron.log("Your Friendly tron log message")
-      console.tron.logImportant("I am important")
-      console.tron.display({
-        name: "DISPLAY",
-        value: {
-          numbers: 1,
-          strings: "strings",
-          booleans: true,
-          arrays: [1, 2, 3],
-          objects: {
-            deeper: {
-              deeper: {
-                yay: "👾",
-              },
-            },
-          },
-          functionNames: function hello() {},
-        },
-        preview: "More control with display()",
-        important: true,
-        image: {
-          uri:
-            "https://avatars2.githubusercontent.com/u/3902527?s=200&u=a0d16b13ed719f35d95ca0f4440f5d07c32c349a&v=4",
-        },
-      })
-      // make an API call for the demo
-      // Don't do API like this, use store's API
-      const demo = new Api()
-      demo.setup()
-      demo.getUser("1")
-      // Let's do some async storage stuff
-      await save("Cool Name", "Boaty McBoatface")
-    },
-    [],
-  )
+  const cardInfo = {
+    cardNumber: "4509953566233704",
+    expMonth: 12,
+    expYear: 2020,
+    secCode: "123",
+    cardHName: "APRO",
+    cardHIType: "DNI",
+    cardHIdent: "12345678"
+  }
+
+  // La info de la tarjeta guardada va a venir de nuestro backend
+  const customercardInfo = {
+    cardId: "1569506780900",
+    secCode: "123"
+  }
+
+  // Para tarjetas que ya se encuentran guardadas en un customer, solo se necesita el Id de la tarjeta y el cod de seguridad
+  async function getCustomerCardToken() {
+    try {
+      var cardToken = await MPExample.getCustomerCardToken(customercardInfo);
+      console.log("customerCardToken ", cardToken)
+    } catch(e) {
+      // TODO 
+      // Pantalla de error con la exception devuelta
+      console.error(e)
+      console.log(e)
+    }
+  }
+
+  // Este metodo se utlizara solamente cuadno ingresa una tarjeta de credito nueva
+  async function getCardToken() {
+    try {
+      var cardToken = await MPExample.getCardToken(cardInfo);
+      console.log("cardToken ", cardToken)
+      // TODO 
+      // Mandar al back el mail y el token de tarjeta para crear customer y su respectiva tarjeta. Tambien guardar datos en la base 
+    } catch(e) {
+      // TODO 
+      // Pantalla de error con la exception devuelta
+      console.error(e)
+      console.log(e)
+    }
+
+    // return fetch('https://facebook.github.io/react-native/movies.json')
+    //   .then((response) => response.json())
+    //   .then((responseJson) => {
+    //     return responseJson.movies;
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
+  }
 
   return (
     <View style={FULL}>
@@ -150,8 +162,14 @@ export const DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
           <Button
             style={DEMO}
             textStyle={DEMO_TEXT}
-            tx="demoScreen.reactotron"
-            onPress={MPExample.getCardToken()}
+            tx="demoScreen.getCardToken"
+            onPress={getCardToken}
+          />
+          <Button
+            style={DEMO}
+            textStyle={DEMO_TEXT}
+            tx="demoScreen.getCustomerCardToken"
+            onPress={getCustomerCardToken}
           />
           <Text style={HINT} tx={`demoScreen.${Platform.OS}ReactotronHint`} />
         </View>
